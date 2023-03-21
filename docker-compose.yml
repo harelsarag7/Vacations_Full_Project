@@ -1,0 +1,37 @@
+services:
+  database-service:
+    image: mysql-vacations
+    build: ./Database
+    environment:
+      - MYSQL_ROOT_PASSWORD=harelsa123
+    ports:
+      - 3307:3306
+    volumes:
+      - database-volume:/var/lib/mysql-vacations
+  backend-service:
+    image: vacations-backend-image
+    build: ./backend
+    environment:
+      - PORT=3040
+      - DB_HOST=database-service
+      - DB_USER=root
+      - DB_ROOT_PASSWORD=harelsa123
+      - DB_DATABASE=vacations
+      - DB_PORT=3306
+
+    ports:
+    - 3040:3040
+    # volumes:
+    #   - C:\...:/app/7-logs
+    depends_on:
+      - database-service
+  frontend-service:
+    image: vacations-frontend-image
+    build: ./Frontend
+    ports:
+    - 3000:3000
+    depends_on:
+      - backend-service
+
+volumes:
+  database-volume:
